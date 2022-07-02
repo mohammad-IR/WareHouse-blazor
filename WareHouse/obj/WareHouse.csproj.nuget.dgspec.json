@@ -1,0 +1,147 @@
+{
+  "format": 1,
+  "restore": {
+    "D:\\working\\WareHouse_Project_Blazor_server\\WareHouse\\WareHouse\\WareHouse.csproj": {}
+  },
+  "projects": {
+    "D:\\working\\WareHouse_Project_Blazor_server\\WareHouse\\WareHouse.DataAccess\\WareHouse.DataAccess.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\working\\WareHouse_Project_Blazor_server\\WareHouse\\WareHouse.DataAccess\\WareHouse.DataAccess.csproj",
+        "projectName": "WareHouse.DataAccess",
+        "projectPath": "D:\\working\\WareHouse_Project_Blazor_server\\WareHouse\\WareHouse.DataAccess\\WareHouse.DataAccess.csproj",
+        "packagesPath": "C:\\Users\\mhose\\.nuget\\packages\\",
+        "outputPath": "D:\\working\\WareHouse_Project_Blazor_server\\WareHouse\\WareHouse.DataAccess\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\mhose\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net6.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net6.0": {
+            "targetAlias": "net6.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net6.0": {
+          "targetAlias": "net6.0",
+          "dependencies": {
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[6.0.6, )"
+            },
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[6.0.6, )"
+            },
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[6.0.6, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.301\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "D:\\working\\WareHouse_Project_Blazor_server\\WareHouse\\WareHouse\\WareHouse.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\working\\WareHouse_Project_Blazor_server\\WareHouse\\WareHouse\\WareHouse.csproj",
+        "projectName": "WareHouse",
+        "projectPath": "D:\\working\\WareHouse_Project_Blazor_server\\WareHouse\\WareHouse\\WareHouse.csproj",
+        "packagesPath": "C:\\Users\\mhose\\.nuget\\packages\\",
+        "outputPath": "D:\\working\\WareHouse_Project_Blazor_server\\WareHouse\\WareHouse\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\mhose\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net6.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net6.0": {
+            "targetAlias": "net6.0",
+            "projectReferences": {
+              "D:\\working\\WareHouse_Project_Blazor_server\\WareHouse\\WareHouse.DataAccess\\WareHouse.DataAccess.csproj": {
+                "projectPath": "D:\\working\\WareHouse_Project_Blazor_server\\WareHouse\\WareHouse.DataAccess\\WareHouse.DataAccess.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net6.0": {
+          "targetAlias": "net6.0",
+          "dependencies": {
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[6.0.6, )"
+            },
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[6.0.6, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.301\\RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
