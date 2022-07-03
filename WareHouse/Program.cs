@@ -1,9 +1,9 @@
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using WareHouse.Data;
 using WareHouse.DataAccess.Data;
+using WareHouse.DataAccess.CodeFirst;
+using WareHouse.Data;
+using WareHouse.Models.InformationUser;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,9 +14,12 @@ builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")
     ));
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders()
     .AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddScoped<IDbInitialzer, DbInitializer>();
+
+
 
 var app = builder.Build();
 

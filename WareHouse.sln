@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32126.317
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WareHouse", "WareHouse\WareHouse.csproj", "{EC9DE2B5-219C-4791-A63D-02207AC8D4A6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WareHouse", "WareHouse\WareHouse.csproj", "{EC9DE2B5-219C-4791-A63D-02207AC8D4A6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WareHouse.Model", "WareHouse.Model\WareHouse.Model.csproj", "{E82A04B7-5B2C-45B7-BD9A-05F3F8CC27E5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WareHouse.Models", "WareHouse.Model\WareHouse.Models.csproj", "{E82A04B7-5B2C-45B7-BD9A-05F3F8CC27E5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WareHouse.DataAccess", "WareHouse.DataAccess\WareHouse.DataAccess.csproj", "{1B5E5059-9670-4A05-B362-597F9B662220}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WareHouse.DataAccess", "WareHouse.DataAccess\WareHouse.DataAccess.csproj", "{1B5E5059-9670-4A05-B362-597F9B662220}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WareHouse.Services", "WareHouse.Services\WareHouse.Services.csproj", "{43A0FF39-A2B6-47E3-89D3-21E68CB61FF1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WareHouse.Services", "WareHouse.Services\WareHouse.Services.csproj", "{43A0FF39-A2B6-47E3-89D3-21E68CB61FF1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
