@@ -26,6 +26,8 @@
   <ItemGroup>
     <ProjectReference Include="..\WareHouse.DataAccess\WareHouse.DataAccess.csproj" />
     <ProjectReference Include="..\WareHouse.Model\WareHouse.Models.csproj" />
+    <ProjectReference Include="..\WareHouse.Services\WareHouse.Services.csproj" />
+    <ProjectReference Include="..\WareHouse.Utilities\WareHouse.Utilities.csproj" />
   </ItemGroup>
 
   <ItemGroup>

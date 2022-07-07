@@ -19,6 +19,6 @@ namespace WareHouse.Models.ViewModels.RawMaterialsViewModel
         public IEnumerable<CurrenciesPrice.CurrencyPrice> Currenies { get; set; }
 
         public IEnumerable<Property> Properties { get; set; }
-        public IEnumerable<RelatedToProperty> RelatedToProperties { get; set; }
+        public IEnumerable<AttributesProperty> AttributesProperties { get; set; }
     }
 }

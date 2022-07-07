@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -15,13 +16,16 @@ namespace WareHouse.Models.RawMaterials
         [Display(Name = "نام ویژگی")]
         public string Name { get; set; }
 
+        [Required(ErrorMessage ="نوع داده رو وارد کنید"), Display(Name="نوع")]
+        public string Type { get; set; }
 
-        public int RawMaterialId { get; set; }
+        public int? RawMaterialId { get; set; }
         [ForeignKey("RawMaterialId")]
-        public RawMaterial RawMaterial { get; set; }
+        [ValidateNever]
+        public RawMaterial? RawMaterial { get; set; }
 
-
-        public IList<RelatedToProperty> RelatedToProperties { get; set; }
+        [NotMapped]
+        public IList<AttributesProperty> AttributesProperties { get; set; }
 
     }
 }

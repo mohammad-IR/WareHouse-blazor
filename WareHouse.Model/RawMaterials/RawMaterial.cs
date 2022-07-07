@@ -17,13 +17,9 @@ namespace WareHouse.Models.RawMaterials
         [Key]
         public int Id { get; set; }
 
-        [Required(ErrorMessage ="هدد شناسایی محصول باید وارد بشود"),Display(Name = "عدد شناسایی محصول")]
+        [Required(ErrorMessage ="عدد شناسایی محصول باید وارد بشود"),Display(Name = "عدد شناسایی محصول")]
         [MaxLength(255, ErrorMessage ="طول عدد شناسایی بیشتر از حد مجاز است")]
         public string PartNumber { get; set; }
-
-        [Required(ErrorMessage = "شناسه محصول باید وارد بشود"), Display(Name = "شناسه محصول")]
-        [MaxLength(255, ErrorMessage = "طول شناسه محصول بیشتر از حد مجاز است")]
-        public string IdMaterial { get; set; }
 
         [Required(ErrorMessage ="تعداد را وارد کنید"), Display(Name = "تعداد")]
         public int NumberOfMaterial { get; set; }

@@ -1,0 +1,60 @@
+﻿@page "/currency/create"
+@using WareHouse.Helper
+@using WareHouse.Models.CurrenciesPrice
+
+@inject ApplicationDbContext _db
+@inject IJSRuntime _JsRunTime
+@inject NavigationManager _NavManager
+
+<div class="row justify-content-center">
+    <div class="col-6">
+        <EditForm Model="Currency" OnInvalidSubmit="NotSub" OnValidSubmit="Submited" class="border rounded rounded-2 bg-light p-3">
+            <DataAnnotationsValidator/>
+            <div class="mb-3">
+              <label for="formGroupExampleInput" class="form-label">نوع</label>
+              <InputText class="form-control" @bind-Value="Currency.Type"></InputText>
+              <ValidationMessage For="()=>Currency.Type"></ValidationMessage>
+
+            </div>
+            <div class="mb-3">
+              <label  class="form-label">ارزش ریالی</label>
+              <InputNumber class="form-control" @bind-Value="Currency.RialValue"></InputNumber>
+              <ValidationMessage For="()=>Currency.RialValue"></ValidationMessage>
+            </div>
+            <div class="mb-3">
+                <button class="form-group btn btn-primary" type="submit">ثبت</button>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+
+
+
+
+@code {
+    private CurrencyPrice Currency { get; set; } = new CurrencyPrice();
+
+    private async Task Submited()
+    {
+        try
+        {
+            _db.CurrenciesPrice.Add(Currency);
+            await _db.SaveChangesAsync();
+            await _JsRunTime.ToastrSuccess("با موفیت ثبت شد");
+            _NavManager.NavigateTo("/currency/list");
+        }
+        catch
+        {
+            await _JsRunTime.ToastrError("با موفیت ثبت نشد");
+        }
+        await Task.Delay(100);
+    }
+    private async Task NotSub()
+    {
+        await _JsRunTime.ToastrError("با موفیت ثبت نشد");
+        await Task.Delay(100);
+        
+    }
+
+}

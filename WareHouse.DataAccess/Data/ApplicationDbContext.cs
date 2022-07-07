@@ -18,11 +18,9 @@ namespace WareHouse.DataAccess.Data
         // RawMaterials
         public DbSet<RawMaterial> RawMaterials { get; set; }
         public DbSet<Property> Properties { get; set; }
-        public DbSet<RelatedToProperty> RelatedToProperties { get; set; }
+        public DbSet<AttributesProperty> AttributesProperties { get; set; }
 
         public DbSet<CurrencyPrice> CurrenciesPrice { get; set; }
-
-
 
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -35,7 +33,9 @@ namespace WareHouse.DataAccess.Data
             builder.Entity<Property>()
                 .HasIndex(u => u.Name)
                 .IsUnique();
-
+            builder.Entity<CurrencyPrice>()
+                .HasIndex(u => u.Type)
+                .IsUnique();
 
         }
     }

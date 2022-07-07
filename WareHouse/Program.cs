@@ -4,6 +4,8 @@ using WareHouse.DataAccess.Data;
 using WareHouse.DataAccess.CodeFirst;
 using WareHouse.Data;
 using WareHouse.Models.InformationUser;
+using WareHouse.Services.IServices;
+using WareHouse.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,9 +17,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
         builder.Configuration.GetConnectionString("DefaultConnection")
     ));
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders()
+    .AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders().AddDefaultUI()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddScoped<IDbInitialzer, DbInitializer>();
+builder.Services.AddScoped<IPropertyServices, PropertyServices>();
 
 
 
@@ -36,8 +39,17 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+SeedDatabase();
 
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 
 app.Run();
+void SeedDatabase()
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitialzer>();
+        dbInitializer.Initiilzer();
+    }
+}

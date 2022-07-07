@@ -12,4 +12,13 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.6" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\WareHouse.DataAccess\WareHouse.DataAccess.csproj" />
+    <ProjectReference Include="..\WareHouse.Utilities\WareHouse.Utilities.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Repository\IRepository\" />
+  </ItemGroup>
+
 </Project>
