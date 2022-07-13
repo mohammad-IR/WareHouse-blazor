@@ -1,0 +1,262 @@
+﻿@page "/supplier/show/{Type}/{Id:int}"
+@using Microsoft.EntityFrameworkCore
+@using WareHouse.Helper
+@using WareHouse.Models.PersonTypes
+@using WareHouse.Utilities
+@inject ApplicationDbContext _db
+@inject IJSRuntime _JsRuntime
+@inject NavigationManager _NavigationManager
+
+<div class="row justify-content-around">
+    @if (Type == SupplierUtilities.Personal) {
+        <div class="col-6 text-start d-flex">
+            <span class="text-muted">
+                @SupplierPersonal.Id : ID
+            </span>
+        </div>
+        <div class="col-6 text-start d-flex">
+            <span class="text-muted">
+                نام :@SupplierPersonal.Name
+            </span>
+        </div>
+        <div class="col-6 text-start d-flex">
+             <span class="text-muted">
+                نام پدر :@SupplierPersonal.FatherName
+            </span>
+        </div>
+        <div class="col-6 text-start d-flex">
+            <span class="text-muted">
+                کد پستی :@SupplierPersonal.CodePostal
+            </span>
+        </div>
+        <div class="col-6 text-start d-flex">
+             <span class="text-muted">
+              شماره تلفن همراه :@SupplierPersonal.CellularPhone
+            </span>
+        </div>
+        <div class="col-6 text-start d-flex">
+            <span class="text-muted">
+              شماره تلفن همراه :@SupplierPersonal.CellularPhone
+            </span>
+        </div>
+        <div class="col-6 text-start d-flex">
+            <span class="text-muted">
+              ثابت:@SupplierPersonal.Phone
+            </span>
+        </div>
+        <div class="col-6 text-start d-flex">
+            <span class="text-muted">
+              <a href="@SupplierPersonal.UrlWebsite" target="_blank" class="nav-link">آدرس سایت</a>
+            </span>
+        </div>
+        <div class="col-6 text-start d-flex">
+            <span class="text-muted">
+              تاریخ تولد:@SupplierPersonal.DateOfBirth
+            </span>
+        </div>
+        <div class="col-6 text-start d-flex">
+            <span class="text-muted">
+              استان:@SupplierPersonal.State
+            </span>
+        </div>
+        <div class="col-6 text-start d-flex">
+            <span class="text-muted">
+              شهر:@SupplierPersonal.City
+            </span>
+        </div>
+        <div class="col-6 text-start d-flex">
+            <span class="text-muted">
+              شهرستان:@SupplierPersonal.Township
+            </span>
+        </div>
+        <div class="col-6 text-start d-flex">
+            <span class="text-muted">
+              کد ملی:@SupplierPersonal.CodeNational
+            </span>
+        </div>
+        <div class="col-6 text-start d-flex">
+            <span class="text-muted">
+              <a href="mailto:@SupplierPersonal.Email">ایمیل</a>
+            </span>
+        </div>
+        <div class="col-6 text-start d-flex">
+            <span class="text-muted">
+              فکس:@SupplierPersonal.Fax
+            </span>
+        </div>
+        <div class="col-6 text-start d-flex">
+            <span class="text-muted">
+              فکس:@SupplierPersonal.Fax
+            </span>
+        </div>
+        <div class="col-12 text-start d-flex">
+            <span class="text-muted">
+                 شماره حساب: @SupplierPersonal.AccountBank.AccountNumber
+                <button class="btn btn-primary mx-3" data-bs-toggle="modal" data-bs-target="#AccountBankInfo">اطلاعات حساب</button>
+            </span>
+
+            <!-- Modal -->
+            <div class="modal fade" id="AccountBankInfo" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">اطلاعات حساب</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="col-12 text-center">
+                        نام بانک : @SupplierPersonal.AccountBank.NameBank
+                    </div>
+                    <div class="col-12 text-center">
+                        شماره حساب: @SupplierPersonal.AccountBank.AccountNumber
+                    </div>
+                    <div class="col-12 text-center">
+                        شماره کارت: @SupplierPersonal.AccountBank.CardNumber
+                    </div>
+                    <div class="col-12 text-center">
+                        شبا: @SupplierPersonal.AccountBank.ShabaNumber
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+    }
+    else if (Type == SupplierUtilities.Corprate)
+    {
+        <div class="col-6 text-start d-flex">
+            <span class="text-muted">
+              @SupplierCorporate.Id : ID
+            </span>
+        </div>
+        <div class="col-6 text-start d-flex">
+            <span class="text-muted">
+                نام شرکت :@SupplierCorporate.Name
+            </span>
+        </div>
+        <div class="col-6 text-start d-flex">
+            <span class="text-muted">
+                نوع شرکت :@SupplierCorporate.Type
+            </span>
+        </div>
+        <div class="col-6 text-start d-flex">
+            <span class="text-muted">
+               کشور:@SupplierCorporate.Country
+            </span>
+        </div>
+        <div class="col-6 text-start d-flex">
+            <span class="text-muted">
+               استان:@SupplierCorporate.State
+            </span>
+        </div>
+        <div class="col-6 text-start d-flex">
+            <span class="text-muted">
+               شهر:@SupplierCorporate.City
+            </span>
+        </div>
+        <div class="col-6 text-start d-flex">
+            <span class="text-muted">
+               شماره دفتر مرکزی:@SupplierCorporate.HeadquartersNumber
+            </span>
+        </div>
+        <div class="col-6 text-start d-flex">
+            <span class="text-muted">
+              تاریخ تاسیس:@SupplierCorporate.DateOfEstablish
+            </span>
+        </div>
+        <div class="col-6 text-start d-flex">
+            <span class="text-muted">
+              شماره ثبت:@SupplierCorporate.RegistrationNumber
+            </span>
+        </div>
+        <div class="col-6 text-start d-flex">
+            <span class="text-muted">
+                <a href="mailto:@SupplierCorporate.Email" class="nav-link">ایمیل</a>
+            </span>
+        </div>
+        <div class="col-6 text-start d-flex">
+            <span class="text-muted">
+              آدرس:@SupplierCorporate.Address
+            </span>
+        </div>
+        <div class="col-6 text-start d-flex">
+            <span class="text-muted">
+                <a href="@SupplierCorporate.UrlWebsite" target="_blank" class="nav-link">آدرس وب سایت</a>
+            </span>
+        </div>
+        <div class="col-6 text-start d-flex">
+            <span class="text-muted">
+              شماره اقتصادی:@SupplierCorporate.EcinimicCode
+            </span>
+        </div>
+        <div class="col-6 text-start d-flex">
+            <span class="text-muted">
+              کد پستی:@SupplierCorporate.CodePostal
+            </span>
+        </div>
+        <div class="col-6 text-start d-flex">
+            <span class="text-muted">
+                 شماره حساب: @SupplierCorporate.AccountBank.AccountNumber
+                <button class="btn btn-primary mx-3" data-bs-toggle="modal" data-bs-target="#AccountBankInfo">اطلاعات حساب</button>
+            </span>
+
+            <!-- Modal -->
+            <div class="modal fade" id="AccountBankInfo" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">اطلاعات حساب</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="col-12 text-center">
+                        نام بانک : @SupplierCorporate.AccountBank.NameBank
+                    </div>
+                    <div class="col-12 text-center">
+                        شماره حساب: @SupplierCorporate.AccountBank.AccountNumber
+                    </div>
+                    <div class="col-12 text-center">
+                        شماره کارت: @SupplierCorporate.AccountBank.CardNumber
+                    </div>
+                    <div class="col-12 text-center">
+                        شبا: @SupplierCorporate.AccountBank.ShabaNumber
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+
+    }
+
+</div>
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    [Parameter]
+    public string Type { get; set; }
+    private Personal SupplierPersonal { get; set; } = new Personal();
+    private Corporate SupplierCorporate { get; set; } = new Corporate();
+    protected async override Task OnInitializedAsync()
+    {
+        if (Type == SupplierUtilities.Personal)
+        {
+            SupplierPersonal = _db.Personals.Where(item => item.Id == Id).
+            Include(item => item.AccountBank).Take(1).ToList()[0];
+        }
+        else
+        {
+            SupplierCorporate  = _db.Corporates.Where(item => item.Id == Id)
+            .Include(item =>item.AccountBank).Take(1).ToList()[0];
+        }
+
+        await Task.Delay(10);
+    }
+
+}

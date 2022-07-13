@@ -19,13 +19,12 @@ namespace WareHouse.Models.RawMaterials
         [Required(ErrorMessage ="نوع داده رو وارد کنید"), Display(Name="نوع")]
         public string Type { get; set; }
 
-        public int? RawMaterialId { get; set; }
-        [ForeignKey("RawMaterialId")]
-        [ValidateNever]
-        public RawMaterial? RawMaterial { get; set; }
-
         [NotMapped]
         public IList<AttributesProperty> AttributesProperties { get; set; }
+
+        [NotMapped]
+        public IList<RawMaterial> RawMaterials { get; set; }
+
 
     }
 }

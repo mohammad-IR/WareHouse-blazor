@@ -1,0 +1,56 @@
+﻿@page "/supplier/Edit/{Type}/{Id:int}"
+
+@using WareHouse.Helper
+@using Models.RawMaterials;
+@using WareHouse.Models.PersonTypes
+@using WareHouse.Pages.Components.PersonTypesCompontent
+@using WareHouse.Utilities
+@inject ApplicationDbContext _db
+@inject IJSRuntime _JsRuntime
+@inject NavigationManager _NavigationManager
+
+<div class="row mb-3 border rounded bg-light p-3 shadow justify-content-between ">
+    <div class="col-6 text-start">
+        <a href="/supplier/create" class="btn btn-secondary">ایجاد</a>
+    </div>
+    <div class="col-6 text-end">
+        <h3 class="text-muted">تامیین کننده</h3>
+    </div>
+</div>
+<div class="row mb-3 border rounded bg-light p-3 shadow justify-content-center">
+    @if (Type == SupplierUtilities.Personal)
+    {
+        <_UpsertPersonal SubmitedParent="Submited" Personal="(Personal)SupplierInfo"></_UpsertPersonal>
+    }
+    else if(Type ==SupplierUtilities.Corprate){
+        <_UpsertCorporate SubmitedParent="Submited" Corporate="(Corporate)SupplierInfo"></_UpsertCorporate>
+    }
+</div>
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    [Parameter]
+    public string Type { get; set; }
+    private object SupplierInfo { get; set; }
+    public void Submited()
+    {
+        _NavigationManager.NavigateTo("supplier/list");
+    }
+    protected async override Task OnInitializedAsync()
+    {
+        if(Type != null && Type == SupplierUtilities.Personal)
+        {
+            SupplierInfo = _db.Personals.FirstOrDefault(item => item.Id == Id);
+        }
+        else if (Type == SupplierUtilities.Corprate)
+        {
+            SupplierInfo = _db.Corporates.FirstOrDefault(item => item.Id == Id);
+        }
+        else
+        {
+            await _JsRuntime.ToastrError("پیدا نشد");
+            _NavigationManager.NavigateTo("supplier/list");
+        }
+        await Task.Delay(10);
+    }
+}

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using WareHouse.Models.InformationUser;
 using WareHouse.Models.CurrenciesPrice;
 using WareHouse.Models.RawMaterials;
+using WareHouse.Models.PersonTypes;
 
 namespace WareHouse.DataAccess.Data
 {
@@ -11,16 +12,21 @@ namespace WareHouse.DataAccess.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
         }
-        public DbSet<AccountBank> accountBanks { get; set; }
+        public DbSet<AccountBank> AccountBanks { get; set; }
         public DbSet<TitleJobs> TitleJobs { get; set; }
 
 
         // RawMaterials
         public DbSet<RawMaterial> RawMaterials { get; set; }
         public DbSet<Property> Properties { get; set; }
+        public DbSet<RawMaterialProperty> RawMaterialProperties { get; set; }
+
         public DbSet<AttributesProperty> AttributesProperties { get; set; }
 
         public DbSet<CurrencyPrice> CurrenciesPrice { get; set; }
+        public DbSet<Supplier> Suppliers { get; set; }
+        public DbSet<Personal> Personals { get; set; }
+        public DbSet<Corporate> Corporates { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)

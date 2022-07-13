@@ -25,11 +25,5 @@ namespace WareHouse.Models.InformationUser
         [Display(Name = "شماره کارت")]
         public string CardNumber { get; set; }
 
-        [Display(Name ="صاحب حساب")]
-        [ForeignKey("OwnerAccountId")]
-        public ApplicationUser OwnerAccount { get; set; }
-        public String OwnerAccountId { get; set; }
-
-
     }
 }

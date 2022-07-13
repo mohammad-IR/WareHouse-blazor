@@ -1,0 +1,149 @@
+﻿@using WareHouse.Helper
+@using WareHouse.Models.InformationUser
+@using WareHouse.Models.PersonTypes
+@using WareHouse.Pages.Components.AccountBankComponent
+@inject ApplicationDbContext _db
+@inject IJSRuntime _JsRuntime
+@inject NavigationManager _NavigationManager
+<EditForm Model="Corporate" OnValidSubmit="Submited">
+    <DataAnnotationsValidator />
+    <div class="mb-3">
+        <label class="form-label">نام شرکت</label>
+        <InputText @bind-Value="Corporate.Name" class="form-control"></InputText>
+        <ValidationMessage For="()=>Corporate.Name"></ValidationMessage>
+
+    </div>
+    <div class="mb-3">
+        <label class="form-label">شماره ثبت</label>
+        <InputText @bind-Value="Corporate.RegistrationNumber" class="form-control"></InputText>
+        <ValidationMessage For="()=>Corporate.RegistrationNumber"></ValidationMessage>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">شماره اقتصادی</label>
+        <InputText @bind-Value="Corporate.EcinimicCode" class="form-control"></InputText>
+        <ValidationMessage For="()=>Corporate.EcinimicCode"></ValidationMessage>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">کد پستی</label>
+        <InputText @bind-Value="Corporate.CodePostal" class="form-control"></InputText>
+        <ValidationMessage For="()=>Corporate.CodePostal"></ValidationMessage>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">نوع شرکت</label>
+        <InputText @bind-Value="Corporate.Type" class="form-control"></InputText>
+        <ValidationMessage For="()=>Corporate.Type"></ValidationMessage>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">آدرس سایت</label>
+        <InputText @bind-Value="Corporate.UrlWebsite" class="form-control"></InputText>
+        <ValidationMessage For="()=>Corporate.UrlWebsite"></ValidationMessage>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">آدرس </label>
+        <InputText @bind-Value="Corporate.Address" class="form-control"></InputText>
+        <ValidationMessage For="()=>Corporate.Address"></ValidationMessage>
+    </div>
+    <div class="mb-3">
+        <InputDate @bind-Value="Corporate.DateOfEstablish"></InputDate>
+        <ValidationMessage For="()=>Corporate.DateOfEstablish"></ValidationMessage>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">کشور</label>
+        <InputText @bind-Value="Corporate.Country" class="form-control"></InputText>
+        <ValidationMessage For="()=>Corporate.Country"></ValidationMessage>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">استان</label>
+        <InputText @bind-Value="Corporate.State" class="form-control"></InputText>
+        <ValidationMessage For="()=>Corporate.State"></ValidationMessage>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">شهر</label>
+        <InputText @bind-Value="Corporate.City" class="form-control"></InputText>
+        <ValidationMessage For="()=>Corporate.City"></ValidationMessage>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">شماره دفتر مرکزی</label>
+        <InputText @bind-Value="Corporate.HeadquartersNumber" class="form-control"></InputText>
+        <ValidationMessage For="()=>Corporate.HeadquartersNumber"></ValidationMessage>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">ایمیل</label>
+        <InputText type="email" @bind-Value="Corporate.Email" class="form-control"></InputText>
+        <ValidationMessage For="()=>Corporate.Email"></ValidationMessage>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">توضیحات</label>
+        <InputText @bind-Value="Corporate.Description" class="form-control"></InputText>
+        <ValidationMessage For="()=>Corporate.Description"></ValidationMessage>
+    </div>
+    <div class="mb-3">
+        <InputText @bind-Value="AccountBank.CardNumber" disabled>
+        </InputText>
+        <br />
+        @if (Result)
+        {
+            <span class="text-success">تایید شده</span>
+        }
+        else
+        {
+            <span class="text-danger m-2">تایید نشده</span>
+        }
+        <button class="btn btn-outline-success m-2" type="button" data-bs-toggle="modal" data-bs-target="#CreateAccount">اضافه کردن اکانت بانکی</button>
+    </div>
+    <div class="mb-3">
+        <button type="submit" class="btn btn-primary">ثبت</button>
+    </div>
+</EditForm>
+<_UpsertAccountBank Result="ResultFunc" AccountBank="AccountBank"></_UpsertAccountBank>
+@test
+@code {
+    [Parameter]
+    public Corporate Corporate { get; set; } = new Corporate();
+    private AccountBank AccountBank { get; set; } = new AccountBank();
+    private bool Result { get; set; } = false;
+    private string test { get; set; }
+    [Parameter]
+    public EventCallback SubmitedParent { get; set; }
+    protected async override Task OnInitializedAsync()
+    {
+        if (Corporate.AccountBankId != 0)
+        {
+            AccountBank = _db.AccountBanks.FirstOrDefault(item => item.Id == Corporate.AccountBankId);
+        }
+        await Task.Delay(10);
+    }
+    private void ResultFunc(bool resultChild)
+    {
+        Result = resultChild;
+    }
+    public async void Submited()
+    {
+        try
+        {
+            if (AccountBank == null)
+            {
+                await _JsRuntime.ToastrError("بانک وجود ندارد");
+                return;
+            }
+            if (Corporate.Id != 0)
+            {
+                _db.Update(Corporate);
+            }
+            else
+            {
+                _db.Add(Corporate);
+            }
+            Corporate.AccountBank = AccountBank;
+            Corporate.AccountBankId = AccountBank.Id;
+            await _db.SaveChangesAsync();
+            await _JsRuntime.ToastrSuccess("با موفقیت ثبت شد");
+            await SubmitedParent.InvokeAsync();
+        }
+        catch (Exception e)
+        {
+            test = e.ToString();
+            await _JsRuntime.ToastrError("ثبت نشد");
+        }
+    }
+}

@@ -1,0 +1,103 @@
+﻿@using WareHouse.Models.InformationUser
+@using WareHouse.Helper
+@inject IJSRuntime _JsRuntime
+@inject ApplicationDbContext _db
+@inject NavigationManager _NavigationManager
+
+
+<div class="modal modal-xl fade @Show" id="CreateAccount" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">@(AccountBank.Id == 0 ? "ایجاد" : "تغییر")</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @if (!SubmitClicked)
+                {
+                    <EditForm Model="AccountBank" OnValidSubmit="SubmitedAccount">
+                        <div class="mb-3">
+                            <label class="form-label">نام بانک</label>
+                            <InputText @bind-Value="AccountBank.NameBank" class="form-control"></InputText>
+                            <ValidationMessage For="()=>AccountBank.NameBank"></ValidationMessage>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">شماره حساب</label>
+                            <InputText @bind-Value="AccountBank.AccountNumber" class="form-control">
+                            </InputText>
+                            <ValidationMessage For="()=>AccountBank.AccountNumber"></ValidationMessage>
+
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">شماره کارت</label>
+                            <InputText @bind-Value="AccountBank.CardNumber" class="form-control">
+                            </InputText>
+                            <ValidationMessage For="()=>AccountBank.CardNumber"></ValidationMessage>
+
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">شماره شبا</label>
+                            <InputText @bind-Value="AccountBank.ShabaNumber" class="form-control">
+                            </InputText>
+                            <ValidationMessage For="()=>AccountBank.ShabaNumber"></ValidationMessage>
+                        </div>
+                        <div class="mb-3 modal-footer">
+                            <button type="submit" class="btn btn-primary">ثبت</button>
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">بستن</button>
+                        </div>
+                    </EditForm>
+                }
+                else if(SubmitClicked)
+                {
+                    <div class="spinner-border text-success" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public AccountBank AccountBank { get; set; } = new AccountBank();
+    [Parameter]
+    // parent get result  if true display card and success message
+    public EventCallback<bool> Result { get; set; }
+
+    // for spinner
+    private bool SubmitClicked { get; set; } = false;
+    // for Modal
+    private string Show { get; set; } = "";
+
+    private async void SubmitedAccount()
+    {
+        StateHasChanged();
+        SubmitClicked = true;
+        try
+        {
+            if (AccountBank.Id == 0)
+            {
+                _db.AccountBanks.Add(AccountBank);
+            }
+            else
+            {
+                _db.AccountBanks.Update(AccountBank);
+            }
+            await _db.SaveChangesAsync();
+            await Result.InvokeAsync(true);
+            await _JsRuntime.ToastrSuccess("با موفقیت ثبت شد");
+            Show = "";
+            SubmitClicked = false;
+
+        }
+        catch
+        {
+            await _JsRuntime.ToastrError("در ثبت مشکل پیش آمد");
+        }
+        SubmitClicked = false;
+        StateHasChanged();
+
+        await Task.Delay(10);
+    }
+}

@@ -198,19 +198,13 @@ namespace WareHouse.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("OwnerAccountId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("ShabaNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OwnerAccountId");
-
-                    b.ToTable("accountBanks");
+                    b.ToTable("AccountBanks");
                 });
 
             modelBuilder.Entity("WareHouse.Models.InformationUser.ApplicationUser", b =>
@@ -389,6 +383,171 @@ namespace WareHouse.DataAccess.Migrations
                     b.ToTable("TitleJobs");
                 });
 
+            modelBuilder.Entity("WareHouse.Models.PersonTypes.Corporate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("AccountBankId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CodePostal")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DateOfCreateInDatabase")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateOfEstablish")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EcinimicCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("HeadquartersNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RegistrationNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("State")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UrlWebsite")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountBankId");
+
+                    b.ToTable("Corporates");
+                });
+
+            modelBuilder.Entity("WareHouse.Models.PersonTypes.Personal", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("AccountBankId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CellularPhone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CodeNational")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CodePostal")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DateOfBirth")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FatherName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Fax")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("State")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Township")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UrlWebsite")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountBankId");
+
+                    b.ToTable("Personals");
+                });
+
+            modelBuilder.Entity("WareHouse.Models.PersonTypes.Supplier", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TypeId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Suppliers");
+                });
+
             modelBuilder.Entity("WareHouse.Models.RawMaterials.AttributesProperty", b =>
                 {
                     b.Property<int>("Id")
@@ -423,9 +582,6 @@ namespace WareHouse.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int?>("RawMaterialId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Type")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -434,8 +590,6 @@ namespace WareHouse.DataAccess.Migrations
 
                     b.HasIndex("Name")
                         .IsUnique();
-
-                    b.HasIndex("RawMaterialId");
 
                     b.ToTable("Properties");
                 });
@@ -471,9 +625,8 @@ namespace WareHouse.DataAccess.Migrations
                     b.Property<long>("PriceIR")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("SupplierId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("SupplierId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -485,6 +638,25 @@ namespace WareHouse.DataAccess.Migrations
                     b.HasIndex("SupplierId");
 
                     b.ToTable("RawMaterials");
+                });
+
+            modelBuilder.Entity("WareHouse.Models.RawMaterials.RawMaterialProperty", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("PropertyId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RawMaterialId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("RawMaterialProperties");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -538,17 +710,6 @@ namespace WareHouse.DataAccess.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("WareHouse.Models.InformationUser.AccountBank", b =>
-                {
-                    b.HasOne("WareHouse.Models.InformationUser.ApplicationUser", "OwnerAccount")
-                        .WithMany()
-                        .HasForeignKey("OwnerAccountId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("OwnerAccount");
-                });
-
             modelBuilder.Entity("WareHouse.Models.InformationUser.ApplicationUser", b =>
                 {
                     b.HasOne("WareHouse.Models.InformationUser.TitleJobs", "TitleJob")
@@ -556,6 +717,28 @@ namespace WareHouse.DataAccess.Migrations
                         .HasForeignKey("TitleJobId");
 
                     b.Navigation("TitleJob");
+                });
+
+            modelBuilder.Entity("WareHouse.Models.PersonTypes.Corporate", b =>
+                {
+                    b.HasOne("WareHouse.Models.InformationUser.AccountBank", "AccountBank")
+                        .WithMany()
+                        .HasForeignKey("AccountBankId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AccountBank");
+                });
+
+            modelBuilder.Entity("WareHouse.Models.PersonTypes.Personal", b =>
+                {
+                    b.HasOne("WareHouse.Models.InformationUser.AccountBank", "AccountBank")
+                        .WithMany()
+                        .HasForeignKey("AccountBankId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AccountBank");
                 });
 
             modelBuilder.Entity("WareHouse.Models.RawMaterials.AttributesProperty", b =>
@@ -569,15 +752,6 @@ namespace WareHouse.DataAccess.Migrations
                     b.Navigation("Property");
                 });
 
-            modelBuilder.Entity("WareHouse.Models.RawMaterials.Property", b =>
-                {
-                    b.HasOne("WareHouse.Models.RawMaterials.RawMaterial", "RawMaterial")
-                        .WithMany()
-                        .HasForeignKey("RawMaterialId");
-
-                    b.Navigation("RawMaterial");
-                });
-
             modelBuilder.Entity("WareHouse.Models.RawMaterials.RawMaterial", b =>
                 {
                     b.HasOne("WareHouse.Models.CurrenciesPrice.CurrencyPrice", "CurrencyPriceType")
@@ -586,7 +760,7 @@ namespace WareHouse.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WareHouse.Models.InformationUser.ApplicationUser", "Supplier")
+                    b.HasOne("WareHouse.Models.PersonTypes.Supplier", "Supplier")
                         .WithMany()
                         .HasForeignKey("SupplierId")
                         .OnDelete(DeleteBehavior.Cascade)

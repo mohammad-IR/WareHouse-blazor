@@ -1,0 +1,192 @@
+﻿@page "/supplier/list"
+@using WareHouse.Helper
+@using WareHouse.Models.PersonTypes
+@using WareHouse.Models.ViewModels.SupplierVM
+@using WareHouse.Utilities
+@inject ApplicationDbContext _db
+@inject IJSRuntime _JsRuntime
+@inject NavigationManager _NavigationManager
+<div class="row justify-content-between mb-5">
+    <div class="text-start">
+        <a class="btn btn-info" href="/supplier/create">اضافه کردن تامین کننده</a>
+    </div>
+    <div class="text-end">
+        <h2 class="text-info">لیست تامین کننده ها</h2>
+    </div>
+</div>
+<div class="row justify-content-end">
+    <div class="card-header d-flex">
+        <div class="mx-2 d-flex">
+            <input type="radio" name="TypeOfSupplier" @onchange="()=>{Type = SupplierUtilities.Personal;ChangeTypeSupplier();}" checked />
+            <label class="me-2">شخص حقیقی</label>
+            <input type="radio" name="TypeOfSupplier" @onchange="()=>{Type = SupplierUtilities.Corprate;ChangeTypeSupplier();}" />
+            <label class="me-2">شخص حقوقی</label>
+        </div>
+    </div>
+</div>
+<div class="row justify-content-center">
+    <table class="table">
+        <thead>
+            @if (Type == SupplierUtilities.Personal)
+            {
+                <tr>
+                    <th scope="col">نام</th>
+                    <th scope="col">تلفن همراه</th>
+                    <th scope="col">آدرس فکس</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+
+                </tr>
+            }
+            else if (Type == SupplierUtilities.Corprate)
+            {
+                <tr>
+                    <th scope="col">نام شرکت</th>
+                    <th scope="col">نوع شرکت</th>
+                    <th scope="col">شماره دفتر مرکزی</th>
+                    <th scope="col">ایمیل</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            }
+        </thead>
+        <tbody>
+            @if (Type == SupplierUtilities.Personal)
+            {
+                @foreach (var item in Suppliers.Personals)
+                {
+                    <tr>
+                        <td>@item.Name</td>
+                        <td>@item.CellularPhone</td>
+                        <td>@item.Fax</td>
+                        <td>
+                            <a href="supplier/show/@Type/@item.Id" class="btn btn-outline-info">نمایش</a>
+                        </td>
+                        <td>
+                        <a href="/supplier/Edit/@Type/@item.Id"  class="btn btn-outline-success">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                              <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                            </svg>
+                        </a>
+                    </td>
+                    <td>
+                        <button @onclick="() =>DeleteSupplier(item.Id, Type)" class="btn btn-outline-info">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
+                              <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
+                            </svg>
+                        </button>
+                    </td>
+                    </tr>
+                }
+            }
+            else if (Type == SupplierUtilities.Corprate)
+            {
+                @foreach (var item in Suppliers.Corporates)
+                {
+                    <tr>
+                        <td>@item.Name</td>
+                        <td>@item.Type</td>
+                        <td>@item.HeadquartersNumber</td>
+                        <td>@item.Email</td>
+                        <td></td>
+                        <td>
+                        <a href="/supplier/Edit/@Type/@item.Id"  class="btn btn-outline-info">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                              <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                            </svg>
+                        </a>
+                    </td>
+                    <td>
+                        <button @onclick="() =>DeleteSupplier(item.Id, Type)" class="btn btn-outline-info">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
+                              <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
+                            </svg>
+                        </button>
+                    </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+@code {
+    private ListOfSuppliersVM Suppliers { get; set; } = new ListOfSuppliersVM();
+    private string Type { get; set; } = SupplierUtilities.Personal;
+    private async void GetSuppliers()
+    {
+        Suppliers.Personals = _db.Suppliers.
+                                Where(item => item.Type == SupplierUtilities.Personal)
+                                .Select(item => _db.Personals.FirstOrDefault(i => i.Id == item.TypeId)).ToList();
+
+        Suppliers.Corporates = _db.Suppliers.
+                                Where(item => item.Type == SupplierUtilities.Corprate)
+                                .Select(item => _db.Corporates.FirstOrDefault(i => i.Id == item.TypeId)).ToList();
+
+    }
+    protected async override Task OnInitializedAsync()
+    {
+        GetSuppliers();
+        StateHasChanged();
+        await Task.Delay(1);
+    }
+    private async void DeleteSupplier(int id, string typeSupplier)
+    {
+        if(typeSupplier == SupplierUtilities.Personal)
+        {
+            var personal = _db.Personals.FirstOrDefault(item => item.Id == id);
+            if(personal == null)
+            {
+                await _JsRuntime.ToastrError("پیدا نشد");
+                return;
+            }
+            try
+            {
+                _db.Personals.Remove(personal);
+                var supplierPersonal = _db.Suppliers.FirstOrDefault(item => (item.Type == SupplierUtilities.Personal && item.TypeId == personal.Id));
+                _db.Suppliers.Remove(supplierPersonal);
+                await _db.SaveChangesAsync();
+                await _JsRuntime.ToastrSuccess("با موفیت ثبت شد");
+                GetSuppliers();
+                StateHasChanged();
+            }
+            catch
+            {
+                await _JsRuntime.ToastrError("حذف نشد");
+            }
+        }
+        else if(typeSupplier == SupplierUtilities.Corprate)
+        {
+            var corporate = _db.Corporates.FirstOrDefault(item => item.Id == id);
+             if(corporate == null)
+            {
+                await _JsRuntime.ToastrError("پیدا نشد");
+                return;
+            }
+            try
+            {
+                _db.Corporates.Remove(corporate);
+                var supplierCorporate = _db.Suppliers.FirstOrDefault(item => (item.Type == SupplierUtilities.Corprate && item.TypeId == corporate.Id));
+                _db.Suppliers.Remove(supplierCorporate);
+                await _db.SaveChangesAsync();
+                await _JsRuntime.ToastrSuccess("با موفیت ثبت شد");
+                GetSuppliers();
+                StateHasChanged();
+            }
+            catch
+            {
+                await _JsRuntime.ToastrError("حذف نشد");
+            }
+        }
+        else
+        {
+            await _JsRuntime.ToastrError("نوع تامین کننده خارج از این مدل هاست");
+        }
+
+    }
+    private async void ChangeTypeSupplier()
+    {
+
+    }
+}

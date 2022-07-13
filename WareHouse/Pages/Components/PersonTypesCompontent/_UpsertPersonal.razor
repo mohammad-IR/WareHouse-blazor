@@ -1,0 +1,143 @@
+﻿@using WareHouse.Helper
+@using WareHouse.Models.InformationUser
+@using WareHouse.Models.PersonTypes
+@using WareHouse.Pages.Components.AccountBankComponent
+@inject ApplicationDbContext _db
+@inject IJSRuntime _JsRuntime
+@inject NavigationManager _NavigationManager
+<EditForm Model="Personal" OnValidSubmit="Submited">
+    <DataAnnotationsValidator />
+    <div class="mb-3">
+        <label class="form-label">نام</label>
+        <InputText @bind-Value="Personal.Name" class="form-control"></InputText>
+        <ValidationMessage For="()=>Personal.Name"></ValidationMessage>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">نام پدر</label>
+        <InputText @bind-Value="Personal.FatherName" class="form-control"></InputText>
+        <ValidationMessage For="()=>Personal.FatherName"></ValidationMessage>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">ایمیل</label>
+        <InputText type="email" @bind-Value="Personal.Email" class="form-control"></InputText>
+        <ValidationMessage For="()=>Personal.Email"></ValidationMessage>
+
+    </div>
+    <div class="mb-3">
+        <label class="form-label">استان</label>
+        <InputText @bind-Value="Personal.State" class="form-control"></InputText>
+        <ValidationMessage For="()=>Personal.State"></ValidationMessage>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">شهر</label>
+        <InputText @bind-Value="Personal.City" class="form-control"></InputText>
+        <ValidationMessage For="()=>Personal.City"></ValidationMessage>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">شهرستان</label>
+        <InputText @bind-Value="Personal.Township" class="form-control"></InputText>
+        <ValidationMessage For="()=>Personal.Township"></ValidationMessage>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">تلفن همراه</label>
+        <InputText @bind-Value="Personal.CellularPhone" class="form-control"></InputText>
+        <ValidationMessage For="()=>Personal.CellularPhone"></ValidationMessage>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">تلفن ثابت</label>
+        <InputText @bind-Value="Personal.Phone" class="form-control"></InputText>
+        <ValidationMessage For="()=>Personal.Phone"></ValidationMessage>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">شماره ملی</label>
+        <InputText @bind-Value="Personal.CodeNational" class="form-control"></InputText>
+        <ValidationMessage For="()=>Personal.CodeNational"></ValidationMessage>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">تاریخ تولد</label>
+        <InputDate @bind-Value="Personal.DateOfBirth" class="form-control"></InputDate>
+        <ValidationMessage For="()=>Personal.DateOfBirth"></ValidationMessage>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">فکس</label>
+        <InputText @bind-Value="Personal.Fax" class="form-control"></InputText>
+        <ValidationMessage For="()=>Personal.Fax"></ValidationMessage>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">کد پستی</label>
+        <InputText @bind-Value="Personal.CodePostal" class="form-control"></InputText>
+        <ValidationMessage For="()=>Personal.CodePostal"></ValidationMessage>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">آدرس وبسایت</label>
+        <InputText @bind-Value="Personal.UrlWebsite" class="form-control"></InputText>
+    </div>
+    <div class="mb-3">
+        <InputText @bind-Value="AccountBank.CardNumber" disabled>
+        </InputText>
+        <br />
+        @if (Result)
+        {
+            <span class="text-success">تایید شده</span>
+        }
+        else
+        {
+            <span class="text-danger m-2">تایید نشده</span>
+        }
+        <button class="btn btn-outline-success m-2" type="button" data-bs-toggle="modal" data-bs-target="#CreateAccount">اضافه کردن اکانت بانکی</button>
+    </div>
+    <div class="mb-3">
+        <button type="submit" class="btn btn-primary">ثبت</button>
+    </div>
+</EditForm>
+<_UpsertAccountBank Result="ResultFunc" AccountBank="AccountBank"></_UpsertAccountBank>
+@code {
+    [Parameter]
+    public Personal Personal { get; set; } = new Personal();
+    private AccountBank AccountBank { get; set; } = new AccountBank();
+    private bool Result { get; set; } = false;
+    [Parameter]
+    public EventCallback SubmitedParent { get; set; }
+    protected async override Task OnInitializedAsync()
+    {
+        if (Personal.AccountBankId != 0)
+        {
+            AccountBank = _db.AccountBanks.FirstOrDefault(item => item.Id == Personal.AccountBankId);
+        }
+        await Task.Delay(10);
+    }
+    private void ResultFunc(bool resultChild)
+    {
+        Result = resultChild;
+    }
+
+    private async void Submited()
+    {
+        try
+        {
+            if (AccountBank == null)
+            {
+                await _JsRuntime.ToastrError("بانک وجود ندارد");
+                return;
+            }
+            Personal.AccountBankId = AccountBank.Id;
+            Personal.AccountBank = AccountBank;
+            if (Personal.Id == 0)
+            {
+                _db.Personals.Add(Personal);
+            }
+            else
+            {
+                _db.Personals.Update(Personal);
+            }
+            await _db.SaveChangesAsync();
+            await _JsRuntime.ToastrSuccess("با موقیت ثبت شد");
+            await SubmitedParent.InvokeAsync();
+        }
+        catch (Exception e)
+        {
+            await _JsRuntime.ToastrError("ثبت نشد");
+        }
+        await Task.Delay(10);
+    }
+}

@@ -1,0 +1,69 @@
+﻿@page "/supplier/create"
+@using WareHouse.Models.InformationUser
+@using WareHouse.Pages.Components.PersonTypesCompontent
+@using WareHouse.Helper
+@using WareHouse.Models.RawMaterials
+@using WareHouse.Models.PersonTypes
+@using WareHouse.Utilities
+@inject ApplicationDbContext _db
+@inject IJSRuntime _JsRuntime
+@inject NavigationManager _NavigationManager
+
+<div class="row justify-content-center">
+    <h2 class="text-muted">ایجاد تامین کننده</h2>
+</div>
+
+<div class="row m-3 justify-content-center">
+    <div class="col-6">
+        <div class="card-header d-flex">
+            <div class="mx-2 d-flex">
+                <input type="radio" name="TypeOfSupplier" @onchange="()=>{Supplier.Type = SupplierUtilities.Personal;}" checked/>
+                <label class="me-2">شخص حقیقی</label>
+                <input type="radio" name="TypeOfSupplier"  @onchange="()=>{Supplier.Type = SupplierUtilities.Corprate;}" />
+                <label class="me-2">شخص حقوقی</label>
+            </div>
+        </div>
+        <div class="card-body">
+
+        </div>
+        @if (Supplier.Type == SupplierUtilities.Personal) 
+        {
+            <_UpsertPersonal SubmitedParent="Submited" Personal="Personal"></_UpsertPersonal>
+        }
+        else
+        {
+            <_UpsertCorporate SubmitedParent="Submited" Corporate="Corporate"></_UpsertCorporate>
+        }
+    </div>
+</div>
+@code {
+    private Supplier Supplier { get; set; } = new Supplier()
+    {
+        Type = SupplierUtilities.Personal
+    };
+    private Personal  Personal { get; set; } = new Personal();
+    private Corporate  Corporate{ get; set; } = new Corporate();
+    private async void Submited()
+    {
+        try
+        {
+            if (Supplier.Type == SupplierUtilities.Personal)
+            {
+                Supplier.TypeId = Personal.Id;
+            }
+            else
+            {
+                Supplier.TypeId = Corporate.Id;
+            }
+            _db.Suppliers.Add(Supplier);
+            var result = await _db.SaveChangesAsync();
+            await _JsRuntime.ToastrSuccess("با موفقیت ثبت شد");
+            _NavigationManager.NavigateTo("/supplier/list");
+        }
+        catch(Exception e)
+        {
+            
+            await _JsRuntime.ToastrError("با موفقیت ثبت نشد");
+        }
+    }
+}
