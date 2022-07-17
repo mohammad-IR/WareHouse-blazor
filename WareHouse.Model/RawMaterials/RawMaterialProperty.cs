@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace WareHouse.Models.RawMaterials
 {
@@ -11,7 +8,14 @@ namespace WareHouse.Models.RawMaterials
     {
         [Key]
         public int Id { get; set; }
+
+        [ForeignKey("Property")]
         public int PropertyId { get; set; }
+        [ValidateNever]
+        public Property Property { get; set; }
+        [ForeignKey("RawMaterial")]
         public int RawMaterialId { get; set; }
+        [ValidateNever]
+        public RawMaterial RawMaterial { get; set; }
     }
 }

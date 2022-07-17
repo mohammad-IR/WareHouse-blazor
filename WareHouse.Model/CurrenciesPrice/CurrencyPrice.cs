@@ -15,7 +15,7 @@ namespace WareHouse.Models.CurrenciesPrice
         [Required(ErrorMessage = "باید نوع ارز را وارد کنید"), Display(Name = "اسم ارز")]
         public string Type { get; set; }
 
-        [Required(ErrorMessage = "باید ارزش ریالی ارز  را وارد کنید"), Display(Name = "ارزش ریالی ارز")]
-        public long RialValue { get; set; }
+        [Required(ErrorMessage = "باید ارزش ریالی ارز  را وارد کنید"), Display(Name = "ارزش بر اساس ارز پایه")]
+        public double BaseCurrencyValue { get; set; }
     }
 }

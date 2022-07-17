@@ -23,9 +23,10 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddScoped<IDbInitialzer, DbInitializer>();
 builder.Services.AddScoped<IPropertyServices, PropertyServices>();
-
-
-
+builder.Services.AddScoped<IBaseConfigService, BaseConfigService>();
+builder.Services.AddScoped<ICurrencyServices, CurrencyServices>();
+builder.Services.AddScoped<IRawMaterialService, RawMaterialService>();
+builder.Services.AddScoped<ISupplierService, SupplierService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

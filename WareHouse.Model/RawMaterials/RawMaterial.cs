@@ -38,18 +38,19 @@ namespace WareHouse.Models.RawMaterials
         [Required(ErrorMessage = "تاریخ خرید رو ثبت کنید ")]
         public DateTime DateOfBuy { get; set; }
 
-        [Display(Name = "قیمت ریالی"), Required(ErrorMessage = "یا قیمت ریالی یا ارزی را وارد کنید")]
-        public long PriceIR { get; set; }
+        [Display(Name = "قیمت پایه")]
+        [NotMapped]
+        public double BaseCurrency { get; set; }
 
-        [Display(Name = "قیمت ارزی"), Required(ErrorMessage = "یا قیمت ریالی یا ارزی را وارد کنید")]
-        public int CurrencyPriceId { get; set; }
+        [ForeignKey("CurrencyPriceType")]
+        [Display(Name = "قیمت ارزی")]
+        public int CurrencyPriceTypeId { get; set; }
 
-        [ForeignKey("CurrencyPriceId")]
         [ValidateNever]
         public CurrencyPrice CurrencyPriceType { get; set; }
 
         [Display(Name = "قیمت ارزی"), Required(ErrorMessage = "قیمت ارزی را وارد نکردید")]
-        public float CurrencyPrice { get; set; }
+        public double CurrencyPrice { get; set; }
 
         [NotMapped]
         public IList<Property> Properties { get; set; }

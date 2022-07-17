@@ -1,5 +1,231 @@
 ﻿@page "/matrial/edit/{Id:int}"
+@using Microsoft.EntityFrameworkCore
+@using WareHouse.Helper
+@using WareHouse.Models.PersonTypes
+@using WareHouse.Models.RawMaterials
+@using WareHouse.Models.ViewModels.RawMaterialVM
+@using WareHouse.Utilities
+@using WareHouse.Services.IServices
+
+@inject IJSRuntime _JsRuntime
+@inject ApplicationDbContext _db
+@inject NavigationManager _NavigationManager
+@inject ISupplierService _SupplierService 
+
+
+<EditForm Model="RawMaterial.RawMaterial" OnValidSubmit="Submited" class="row m-5 border rounded justify-content-center">
+    <DataAnnotationsValidator />
+
+    <div class="mb-3">
+        <label class="form-label">عدد شناسایی محصول</label>
+        <InputText @bind-Value="RawMaterial.RawMaterial.PartNumber" class="form-control"></InputText>
+        <ValidationMessage For="()=>RawMaterial.RawMaterial.PartNumber"></ValidationMessage>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">تعداد محصول</label>
+        <InputNumber @bind-Value="RawMaterial.RawMaterial.NumberOfMaterial" class="form-control"></InputNumber>
+        <ValidationMessage For="()=>RawMaterial.RawMaterial.NumberOfMaterial"></ValidationMessage>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">حداقل هشدار</label>
+        <InputNumber @bind-Value="RawMaterial.RawMaterial.Limit" class="form-control"></InputNumber>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">تاریخ خرید</label>
+        <InputDate @bind-Value="RawMaterial.RawMaterial.DateOfBuy" class="form-control"></InputDate>
+        <ValidationMessage For="()=>RawMaterial.RawMaterial.DateOfBuy"></ValidationMessage>
+    </div>
+    <div class="mb-3">
+        <label class="form-label"> قیمت پایه</label>
+        <InputSelect class="form-select" @bind-Value="RawMaterial.RawMaterial.CurrencyPriceTypeId">
+            <option selected>--انتخاب کنید--</option>
+            @foreach (var item in RawMaterial.Currecnies)
+            {
+                <option value="@item.Id">@item.Type</option>
+            }
+        </InputSelect>
+        <ValidationMessage For="()=>RawMaterial.RawMaterial.CurrencyPriceTypeId"></ValidationMessage>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">قیمت</label>
+        <InputNumber @bind-Value="RawMaterial.RawMaterial.CurrencyPrice" class="form-control"></InputNumber>
+        <ValidationMessage For="()=>RawMaterial.RawMaterial.CurrencyPrice"></ValidationMessage>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">ویژگی های مورد نظر</label>
+        <select class="form-select" @onchange="AddProperty">
+            <option selected>انتخاب کنید</option>
+            @foreach (var item in RawMaterial.Properties)
+            {
+                <option value="@item.Id">@item.Name</option>
+            }
+        </select>
+        <div class="row m-3 p-3 border bg-light rounded shadow">
+            @foreach (KeyValuePair<int, string> item in Properties)
+            {
+                <div class="col-md-1  bg-secondary rounded border-white m-1 p-2 justify-content-between">
+                    <div class="row justify-content-between">
+                        <span class="text-white-50 col-4">@item.Value</span>
+                        <span @onclick="()=>deleteProp(item.Key)">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x bg-white " viewBox="0 0 16 16">
+                                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
+                            </svg>
+                        </span>
+                    </div>
+                </div>
+
+            }
+        </div>
+    </div>
+    <div class="mb-3">
+        <label class="form-label "> تامین کننده </label>
+        <InputSelect class="form-select" @bind-Value="RawMaterial.RawMaterial.SupplierId">
+            <option value="">--انتخاب کنید--</option>
+            @foreach (var item in RawMaterial.Suppliers.Personals)
+            {
+                @if (FindSupplier(SupplierUtilities.Personal, item.Id).Id == RawMaterial.RawMaterial.SupplierId)
+                {
+                    <option value="@FindSupplier(SupplierUtilities.Personal, item.Id).Id" selected>@item.Name</option>
+                }
+                else
+                {
+                    <option value="@FindSupplier(SupplierUtilities.Personal, item.Id).Id">@item.Name</option>
+
+                }
+            }
+            @foreach (var item in RawMaterial.Suppliers.Corporates)
+            {
+                @if (FindSupplier(SupplierUtilities.Corprate, item.Id).Id == RawMaterial.RawMaterial.SupplierId)
+                {
+                    <option value="@FindSupplier(SupplierUtilities.Corprate, item.Id).Id" selected>@item.Name</option>
+                }
+                else
+                {
+                    <option value="@FindSupplier(SupplierUtilities.Corprate, item.Id).Id">@item.Name</option>
+                }
+            }
+
+        </InputSelect>
+        <ValidationMessage For="()=>RawMaterial.RawMaterial.SupplierId"></ValidationMessage>
+    </div>
+    <div class="my-5 text-start col-2 ">
+        <button class="btn btn-primary px-4" type="submit">ثبت</button>
+    </div>
+</EditForm>
 
 @code {
+    [Parameter]
+    public int Id { get; set; }
+    private CreateRawMaterialVM RawMaterial { get; set; } = new CreateRawMaterialVM();
+    private Dictionary<int, string> Properties { get; set; } = new Dictionary<int, string>();
 
+    protected async override Task OnInitializedAsync()
+    {
+        RawMaterial.RawMaterial = _db.RawMaterials
+                                .Include(item => item.CurrencyPriceType)
+                                .Include(item => item.Supplier)
+                                .FirstOrDefault(item => item.Id == Id);
+
+        Properties = _db.RawMaterialProperties
+                                  .Include(item => item.Property)
+                                  .Where(item => item.RawMaterialId == Id)
+                                  .ToDictionary(item => item.Property.Id, item => item.Property.Name);
+
+        RawMaterial.Currecnies = _db.CurrenciesPrice.ToList();
+
+        RawMaterial.Properties = _db.Properties
+                                    .ToList();
+        RawMaterial.Properties = RawMaterial.Properties.Where(item => !Properties.ContainsKey(item.Id)).ToList();
+
+        RawMaterial.Suppliers = _SupplierService.GetAllSuppliers();
+        await Task.Delay(10);
+    }
+    private void deleteProp(int value)
+    {
+        Properties.Remove(value);
+        RawMaterial.Properties.Add(_db.Properties.FirstOrDefault(item => item.Id == value));
+        StateHasChanged();
+    }
+    private Supplier FindSupplier(string type, int id)
+    {
+        return _db.Suppliers.FirstOrDefault(value => value.Type == type && value.TypeId == id);
+    }
+    private async void AddProperty(ChangeEventArgs e)
+    {
+        try
+        {
+            var key = Int32.Parse(e.Value.ToString());
+            var value = RawMaterial.Properties.FirstOrDefault(item => item.Id == key).Name;
+            Properties.Add(key, value);
+            RawMaterial.Properties.Remove(RawMaterial.Properties.FirstOrDefault(item => item.Id == key));
+            StateHasChanged();
+        }
+        catch
+        {
+        }
+    }
+
+    private async void Submited()
+    {
+        try
+        {
+            var baseCurrency = _db.BaseSettings.Include(item => item.CurrencyPriceBase).Select(item => item.CurrencyPriceBase).Single();
+            if (baseCurrency.Id == RawMaterial.RawMaterial.CurrencyPriceTypeId)
+            {
+                RawMaterial.RawMaterial.BaseCurrency = RawMaterial.RawMaterial.CurrencyPrice;
+            }
+            else
+            {
+                RawMaterial.RawMaterial.CurrencyPriceType = _db.CurrenciesPrice.FirstOrDefault(item => item.Id == RawMaterial.RawMaterial.CurrencyPriceTypeId);
+                RawMaterial.RawMaterial.BaseCurrency = RawMaterial.RawMaterial.CurrencyPriceType.BaseCurrencyValue * RawMaterial.RawMaterial.CurrencyPrice;
+            }
+
+            var currencyType = _db.CurrenciesPrice.FirstOrDefault(item => item.Id == RawMaterial.RawMaterial.CurrencyPriceTypeId);
+            if (currencyType == null)
+            {
+                await _JsRuntime.ToastrError("ارزیی با این نام وجود ندارد");
+                return;
+            }
+            var supplier = _db.Suppliers.FirstOrDefault(item => item.Id == RawMaterial.RawMaterial.SupplierId);
+            if (supplier == null)
+            {
+                await _JsRuntime.ToastrError("تامین کننده ایی با این نام وجود ندارد");
+                return;
+            }
+            _db.RawMaterials.Update(RawMaterial.RawMaterial);
+            _db.SaveChanges();
+
+            try
+            {
+
+                var propertiesForMaterial = _db.RawMaterialProperties
+                                               .Where(item => item.RawMaterialId == RawMaterial.RawMaterial.Id);
+                _db.RawMaterialProperties.RemoveRange(propertiesForMaterial);
+                _db.SaveChanges();
+
+
+                foreach (KeyValuePair<int, string> item in Properties)
+                {
+                    _db.RawMaterialProperties.Add(new RawMaterialProperty()
+                        {
+                            RawMaterialId = RawMaterial.RawMaterial.Id,
+                            PropertyId = item.Key
+                        });
+                }
+                _db.SaveChanges();
+                await _JsRuntime.ToastrSuccess("با موفقیت ثبت شد");
+                _NavigationManager.NavigateTo("matrial/list");
+            }
+            catch
+            {
+                await _JsRuntime.ToastrError("مشکل در ثبت ویژگی ها");
+
+            }
+        }
+        catch(Exception e)
+        {
+            StateHasChanged();
+            await _JsRuntime.ToastrError("مشکل در ثبت مقادیر");
+        }
+    }
 }

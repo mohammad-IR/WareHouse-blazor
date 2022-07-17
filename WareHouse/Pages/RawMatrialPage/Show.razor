@@ -1,0 +1,96 @@
+﻿@page "/matrial/show/{Id:int}"
+@using Microsoft.EntityFrameworkCore
+@using WareHouse.Helper
+@using WareHouse.Models.CurrenciesPrice
+@using WareHouse.Models.ViewModels.RawMaterialVM
+@using WareHouse.Services.IServices
+@using WareHouse.Utilities
+@inject IRawMaterialService _RawMaterialService
+@inject ApplicationDbContext _db
+@inject IJSRuntime _JsRuntime
+@inject NavigationManager _NavigationManager
+
+<div class="row justify-content-between m-5 p-3 border rounded bg-light shadow">
+    <div class="col-6 d-flex my-2">
+        <span class="text-muted">عدد شناسایی</span>
+        :
+        <span class="text-info">@RawMaterial.RawMaterial.PartNumber</span>
+    </div>
+    <div class="col-6 d-flex my-2">
+        <span class="text-muted">تعداد</span>
+        :
+        <span class='@(RawMaterial.RawMaterial.NumberOfMaterial < RawMaterial.RawMaterial.Limit? "text-danger" : "text-success")'>@RawMaterial.RawMaterial.NumberOfMaterial</span>
+    </div>
+    <div class="col-6 d-flex my-2">
+        <span class="text-muted">تعداد هشدار</span>
+        :
+        <span class="text-info">@RawMaterial.RawMaterial.Limit</span>
+    </div>
+    <div class="col-6 d-flex my-2">
+        <span class="text-muted">تامین کننده</span>
+        :
+        <span class="text-info">@RawMaterial.NameSupplier</span>
+    </div>
+    <div class="col-6 d-flex my-2">
+        <span class="text-muted">تاریخ خرید شمسی</span>
+        :
+        <span class="text-info">@RawMaterial.RawMaterial.DateOfBuy</span>
+    </div>
+    <div class="col-6 d-flex my-2">
+        <span class="text-muted">قیمت ارزی</span>
+        :
+        <span class="text-info">@RawMaterial.RawMaterial.CurrencyPrice @RawMaterial.RawMaterial.CurrencyPriceType.Type</span>
+    </div>
+    <div class="col-6 d-flex my-2">
+        <span class="text-muted">قیمت پایه</span>
+        :
+        <span class="text-info">@RawMaterial.RawMaterial.BaseCurrency @BaseCurrency.Type</span>
+    </div>
+    <div class="col-6 d-flex my-2">
+        <span class="text-muted">نام تامین کننده</span>
+        :
+        <span class="text-info">@RawMaterial.NameSupplier</span>
+    </div>
+    <div class="col-6 d-flex my-2">
+        <span class="text-muted">شماره تلفن</span>
+        :
+        <span class="text-info">@RawMaterial.PhoneNumberSupplier</span>
+    </div>
+
+
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    private RawMaterialListVM RawMaterial { get; set; } = new RawMaterialListVM();
+    private CurrencyPrice BaseCurrency { get; set; }
+    protected async override Task OnInitializedAsync()
+    {
+        BaseCurrency = _db.BaseSettings
+                        .Include(item => item.CurrencyPriceBase)
+                        .Select(item => item.CurrencyPriceBase)
+                        .Single();
+        RawMaterial.RawMaterial = _db.RawMaterials.FirstOrDefault(item => item.Id == Id);
+        if(RawMaterial.RawMaterial == null)
+        {
+            await _JsRuntime.ToastrError("پیدا نشد");
+            _NavigationManager.NavigateTo("matrial/list");
+        }
+        var supplier = _db.Suppliers.FirstOrDefault(item => item.Id == RawMaterial.RawMaterial.SupplierId);
+        if(supplier.Type == SupplierUtilities.Personal)
+        {
+            var supplierType = _db.Personals.FirstOrDefault(item => item.Id == supplier.TypeId);
+            RawMaterial.NameSupplier = supplierType.Name;
+            RawMaterial.PhoneNumberSupplier = supplierType.Phone;
+        }
+        else if(supplier.Type == SupplierUtilities.Corprate)
+        {
+            var supplierType = _db.Corporates.FirstOrDefault(item => item.Id == supplier.TypeId);
+            RawMaterial.NameSupplier = supplierType.Name;
+            RawMaterial.PhoneNumberSupplier = supplierType.HeadquartersNumber;
+        }
+        await Task.Delay(10);
+    }
+
+}

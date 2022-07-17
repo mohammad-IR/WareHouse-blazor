@@ -155,6 +155,24 @@ namespace WareHouse.DataAccess.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("WareHouse.Models.ConfigFile.BaseSetting", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("CurrencyPriceBaseId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CurrencyPriceBaseId");
+
+                    b.ToTable("BaseSettings");
+                });
+
             modelBuilder.Entity("WareHouse.Models.CurrenciesPrice.CurrencyPrice", b =>
                 {
                     b.Property<int>("Id")
@@ -163,8 +181,8 @@ namespace WareHouse.DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<long>("RialValue")
-                        .HasColumnType("bigint");
+                    b.Property<double>("BaseCurrencyValue")
+                        .HasColumnType("float");
 
                     b.Property<string>("Type")
                         .IsRequired()
@@ -602,10 +620,10 @@ namespace WareHouse.DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<float>("CurrencyPrice")
-                        .HasColumnType("real");
+                    b.Property<double>("CurrencyPrice")
+                        .HasColumnType("float");
 
-                    b.Property<int>("CurrencyPriceId")
+                    b.Property<int>("CurrencyPriceTypeId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("DateOfBuy")
@@ -622,15 +640,12 @@ namespace WareHouse.DataAccess.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<long>("PriceIR")
-                        .HasColumnType("bigint");
-
                     b.Property<int>("SupplierId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrencyPriceId");
+                    b.HasIndex("CurrencyPriceTypeId");
 
                     b.HasIndex("PartNumber")
                         .IsUnique();
@@ -655,6 +670,10 @@ namespace WareHouse.DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PropertyId");
+
+                    b.HasIndex("RawMaterialId");
 
                     b.ToTable("RawMaterialProperties");
                 });
@@ -710,6 +729,17 @@ namespace WareHouse.DataAccess.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("WareHouse.Models.ConfigFile.BaseSetting", b =>
+                {
+                    b.HasOne("WareHouse.Models.CurrenciesPrice.CurrencyPrice", "CurrencyPriceBase")
+                        .WithMany()
+                        .HasForeignKey("CurrencyPriceBaseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CurrencyPriceBase");
+                });
+
             modelBuilder.Entity("WareHouse.Models.InformationUser.ApplicationUser", b =>
                 {
                     b.HasOne("WareHouse.Models.InformationUser.TitleJobs", "TitleJob")
@@ -756,7 +786,7 @@ namespace WareHouse.DataAccess.Migrations
                 {
                     b.HasOne("WareHouse.Models.CurrenciesPrice.CurrencyPrice", "CurrencyPriceType")
                         .WithMany()
-                        .HasForeignKey("CurrencyPriceId")
+                        .HasForeignKey("CurrencyPriceTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -769,6 +799,25 @@ namespace WareHouse.DataAccess.Migrations
                     b.Navigation("CurrencyPriceType");
 
                     b.Navigation("Supplier");
+                });
+
+            modelBuilder.Entity("WareHouse.Models.RawMaterials.RawMaterialProperty", b =>
+                {
+                    b.HasOne("WareHouse.Models.RawMaterials.Property", "Property")
+                        .WithMany()
+                        .HasForeignKey("PropertyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WareHouse.Models.RawMaterials.RawMaterial", "RawMaterial")
+                        .WithMany()
+                        .HasForeignKey("RawMaterialId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Property");
+
+                    b.Navigation("RawMaterial");
                 });
 #pragma warning restore 612, 618
         }

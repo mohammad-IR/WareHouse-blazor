@@ -1,4 +1,5 @@
 ﻿@page "/currency/edit/{Id:int}"
+@using Microsoft.EntityFrameworkCore
 @using WareHouse.Helper
 @using WareHouse.Models.CurrenciesPrice
 
@@ -6,6 +7,10 @@
 @inject IJSRuntime _JsRunTime
 @inject NavigationManager _NavManager
 
+<div class="col-3 d-flex">
+    <span class="text-info">تامیین کننده</span>
+    <span class="text-muted">@BaseCurrecny.Type</span>
+</div>
 <div class="row justify-content-center">
     <div class="col-6">
         <EditForm Model="Currency" OnInvalidSubmit="NotValidSubmit" OnValidSubmit="Submited" class="border rounded rounded-2 bg-light p-3">
@@ -17,9 +22,9 @@
 
             </div>
             <div class="mb-3">
-              <label  class="form-label">ارزش ریالی</label>
-              <InputNumber class="form-control" @bind-Value="Currency.RialValue"></InputNumber>
-              <ValidationMessage For="()=>Currency.RialValue"></ValidationMessage>
+              <label  class="form-label">ارزش @BaseCurrecny.Type</label>
+              <InputNumber class="form-control" @bind-Value="Currency.BaseCurrencyValue"></InputNumber>
+              <ValidationMessage For="()=>Currency.BaseCurrencyValue"></ValidationMessage>
             </div>
             <div class="mb-3">
                 <button class="form-group btn btn-primary" type="submit">ثبت</button>
@@ -29,15 +34,20 @@
 </div>
 
 
-@test
 @code {
     [Parameter]
     public int Id { get; set; }
-    private string test { get; set; } = "before test";
     private CurrencyPrice Currency { get; set; } = new CurrencyPrice();
+    private CurrencyPrice BaseCurrecny { get; set; } = new CurrencyPrice();
 
     protected async override Task OnInitializedAsync()
     {
+        BaseCurrecny = _db.BaseSettings.
+                        Include(item => item.CurrencyPriceBase).
+                        Take(1).
+                        Select(item=>item.CurrencyPriceBase).
+                        ToList()[0];
+
         Currency = _db.CurrenciesPrice.FirstOrDefault(item => item.Id == Id);
         if (Currency == null)
         {
@@ -50,7 +60,6 @@
     {
         try
         {
-            test = "قبل ااز dd";
             _db.CurrenciesPrice.Update(Currency);
             await _db.SaveChangesAsync();
             await _JsRunTime.ToastrSuccess("با موفیت ثبت شد");

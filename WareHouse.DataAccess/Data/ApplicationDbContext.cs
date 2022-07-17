@@ -4,6 +4,7 @@ using WareHouse.Models.InformationUser;
 using WareHouse.Models.CurrenciesPrice;
 using WareHouse.Models.RawMaterials;
 using WareHouse.Models.PersonTypes;
+using WareHouse.Models.ConfigFile;
 
 namespace WareHouse.DataAccess.Data
 {
@@ -28,6 +29,8 @@ namespace WareHouse.DataAccess.Data
         public DbSet<Personal> Personals { get; set; }
         public DbSet<Corporate> Corporates { get; set; }
 
+        // Config Tables
+        public DbSet<BaseSetting> BaseSettings { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

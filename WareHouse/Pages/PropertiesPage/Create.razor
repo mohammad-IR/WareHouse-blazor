@@ -52,8 +52,9 @@
 </div>
 
 
-
+@test
 @code{
+    private string test { get; set; }
     private List<string> ListOfattribute { get; set; } = new List<string>();
     private string attribute { get; set; } = "";
     private Property Prop = new Property();
@@ -87,7 +88,7 @@
                     catch (Exception e)
                     {
                         //customError = e.ToString();
-                        customError = ("در ثبت ویژگی ها در دیتابیس مشکل خوردیم");
+                        customError = "در ثبت ویژگی ها در دیتابیس مشکل خوردیم";
                         _db.Properties.Remove(Prop);
                     } 
                 }
@@ -107,6 +108,8 @@
         }
         catch (Exception e)
         {
+            test = e.ToString();
+            StateHasChanged();
             customError = "یک نام دیگر وارد کنید";
             await _JsRunTime.ToastrError("مشکلی پیش امده");
         }
