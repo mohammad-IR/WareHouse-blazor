@@ -3,7 +3,9 @@
 #nullable disable
 
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using WareHouse.Models.InformationUser;
 
 namespace WareHouse.Areas.Identity.Pages.Account
 {
@@ -20,6 +22,7 @@ namespace WareHouse.Areas.Identity.Pages.Account
         /// </summary>
         public void OnGet()
         {
+            
         }
     }
 }

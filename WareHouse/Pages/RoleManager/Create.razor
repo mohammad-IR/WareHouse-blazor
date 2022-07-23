@@ -1,0 +1,80 @@
+﻿@page "/role/create"
+@using Microsoft.AspNetCore.Identity
+@using System.Security.Claims
+@using System.Reflection
+@using WareHouse.Models.InformationUser
+@using WareHouse.Models.ViewModels.RoleVM
+@using WareHouse.Helper
+@using WareHouse.Services.IServices
+@inject RoleManager<IdentityRole> _roleManager
+@inject ApplicationDbContext _db
+@inject NavigationManager _navigationManager
+@inject IUrlServices _urlServices
+@inject IJSRuntime _JsRuntime
+
+<div class="row m-5 border rounded shadow bg-light p-3 justify-content-between align-content-center">
+    <h2 class="col-6 text-primary">ایجاد Role</h2>
+    <div class="col-6 d-flex text-end ">
+        <div class="">
+            <a href="user/list" class="btn btn-outline-primary mx-2 my-2">لیست کابران</a>
+        </div>
+    </div>
+</div>
+<div class="row m-4 p-3 border rounded bg-light ">
+    <EditForm Model="CreateRoleVM" OnValidSubmit="Submited">
+        <div class="mb-3">
+            <label class="form-label">نام Role</label>
+            <InputText @bind-Value="CreateRoleVM.NameRole" class="form-control"></InputText>
+            <ValidationMessage For="()=>CreateRoleVM.NameRole"></ValidationMessage>
+        </div>
+        <div class="mb-3">
+            @foreach (var item in CreateRoleVM.Claims)
+            {
+
+                <input type="checkbox" @bind="@CreateRoleVM.Claims[item.Key]" />
+                <label class="form-label">@item.Key</label>
+                <br />
+            }
+        </div>
+        <div class="mb-3">
+            <button type="submit" class="btn btn-primary">ثبت</button>
+        </div>
+    </EditForm>
+</div>
+@code {
+    public CreateRoleVM CreateRoleVM { get; set; } = new CreateRoleVM();
+    protected override void OnInitialized()
+    {
+
+        CreateRoleVM.Claims = _urlServices.GetRouteUrlWithAuthorizeAttribute().ToDictionary(item => item, item => false);
+
+        base.OnInitialized();
+
+    }
+    private async Task Submited()
+    {
+        var newRole = new IdentityRole() { Name = CreateRoleVM.NameRole };
+        var result = await _roleManager.CreateAsync(newRole);
+        if (!result.Succeeded)
+        {
+            await _JsRuntime.ToastrError("مشکل در ذخیره Role");
+            return;
+        }
+        try
+        {
+            foreach (var item in CreateRoleVM.Claims)
+            {
+                if (item.Value)
+                {
+                    await _roleManager.AddClaimAsync(newRole, new Claim(item.Key, true.ToString()));
+                }
+            }
+            await _JsRuntime.ToastrSuccess("با موفقیت ثبت شد");
+            _navigationManager.NavigateTo("role/list");
+        }
+        catch
+        {
+            await _JsRuntime.ToastrError("مشکل در ذخیره Role");
+        }
+    }
+}

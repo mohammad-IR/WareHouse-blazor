@@ -1,0 +1,114 @@
+﻿@page "/user/create"
+@using Microsoft.AspNetCore.Identity
+@using WareHouse.Models.InformationUser
+@using WareHouse.Helper
+@using WareHouse.Models.ViewModels.UserVM
+@inject ApplicationDbContext _db
+@inject IJSRuntime _JSRuntime
+@inject UserManager<ApplicationUser> _userManager
+@inject NavigationManager _navigationManager
+<div class="row m-5 border rounded shadow bg-light p-3 justify-content-between align-content-center">
+    <h2 class="col-6 text-primary">ایجاد کاربر</h2>
+    <div class="col-6 d-flex text-end ">
+        <div class="offset-md-5">
+            <a href="role/create" class="btn btn-outline-primary mx-2 my-2">ایجاد قانون</a>
+        </div>
+        <div class="">
+            <a href="user/list" class="btn btn-outline-primary mx-2 my-2">لیست کابران</a>
+        </div>
+    </div>
+</div>
+<div class="row m-4 p-3 border rounded bg-light shadow">
+    <EditForm Model="UserVM" OnValidSubmit="Submited">
+        <DataAnnotationsValidator />
+        <div class="mb-3">
+            <label class="form-label">نام</label>
+            <InputText class="form-control" @bind-Value="UserVM.User.FirstName"></InputText>
+            <ValidationMessage For="()=>UserVM.User.FirstName"></ValidationMessage>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">نام خانوادگی</label>
+            <InputText class="form-control" @bind-Value="UserVM.User.LastName"></InputText>
+            <ValidationMessage For="()=>UserVM.User.LastName"></ValidationMessage>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">نام کاربری  برای ورود</label>
+            <InputText class="form-control" @bind-Value="UserVM.User.UserName"></InputText>
+            <ValidationMessage For="()=>UserVM.User.UserName"></ValidationMessage>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">ایمیل</label>
+            <InputText class="form-control" @bind-Value="UserVM.User.Email"></InputText>
+            <ValidationMessage For="()=>UserVM.User.Email"></ValidationMessage>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">شماره تلفن</label>
+            <InputText class="form-control" @bind-Value="UserVM.User.PhoneNumber"></InputText>
+            <ValidationMessage For="()=>UserVM.User.PhoneNumber"></ValidationMessage>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">پسورد</label>
+            <InputText type="password" @bind-Value="UserVM.User.Password" class="form-control"></InputText>
+            <ValidationMessage For="()=>UserVM.User.Password"></ValidationMessage>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">تکرار پسورد</label>
+            <InputText type="password" @bind-Value="UserVM.User.PasswordComfrim" class="form-control"></InputText>
+            <ValidationMessage For="()=>UserVM.User.PasswordComfrim"></ValidationMessage>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">تکرار پسورد</label>
+            <InputSelect type="password" @bind-Value="UserVM.RoleUser" class="form-control">
+                <option selected value="">--انتخاب کنید --</option>
+                @foreach (var item in UserVM.Roles)
+                {
+                    <option value="@item.Key">@item.Value</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="()=>UserVM.RoleUser"></ValidationMessage>
+        </div>
+
+        <div class="mb-3">
+            <button class="btn btn-primary">ثبت درخواست</button>
+        </div>
+    </EditForm>
+</div>
+
+@code {
+    public CreateUserVM UserVM { get; set; } = new CreateUserVM();
+    protected override async Task OnInitializedAsync()
+    {
+        UserVM.Roles = _db.Roles.ToDictionary(item => item.Id, item => item.Name);
+        await Task.Delay(100);
+    }
+    private async void Submited()
+    {
+        try
+        {
+            await _userManager.CreateAsync(UserVM.User, UserVM.User.Password);
+            try
+            {
+                if (UserVM.RoleUser == null)
+                {
+                    await _JSRuntime.ToastrError("باید Role را وارد کنید");
+                    return;
+                }
+                var role = _db.Roles.FirstOrDefault(item => item.Id == UserVM.RoleUser);
+                await _userManager.AddToRoleAsync(UserVM.User, role.Name);
+
+                await _JSRuntime.ToastrSuccess("با موفقیت اضافه شد");
+                _navigationManager.NavigateTo("user/list");
+            }
+            catch
+            {
+                await _JSRuntime.ToastrSuccess("مشکل در ذخیره Role");
+                await _userManager.DeleteAsync(UserVM.User);
+                _navigationManager.NavigateTo("user/list");
+            }
+        }
+        catch
+        {
+            await _JSRuntime.ToastrSuccess("مشکل در ذخیره کاربر");
+        }
+    }
+}

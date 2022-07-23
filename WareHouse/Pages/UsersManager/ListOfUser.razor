@@ -1,0 +1,104 @@
+﻿@page "/user/list"
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
+@using WareHouse.Helper
+@using WareHouse.Models.CurrenciesPrice
+@using WareHouse.Models.InformationUser
+@using WareHouse.Models.ViewModels.UserVM
+
+@inject ApplicationDbContext _db
+@inject IJSRuntime _JsRunTime
+@inject NavigationManager _NavManager
+@inject UserManager<ApplicationUser> _userManager
+<div class="row justify-content-between mx-5 my-4 p-4 border rounded shadow bg-light align-content-center">
+    <div class="col-6 text-start">
+        <h1 class="text-primary">لیست کاربران</h1>
+    </div>
+    <div class="col-6 text-end">
+        <a href="user/create" class="btn btn-primary">ایجاد کاربر</a>
+    </div>
+</div>
+<div class="row justify-content-center">
+    <div class="col-11 border rounded bg-light p-4 shadow">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">اسم و فامیل</th>
+                    <th scope="col">Role</th>
+                    <th scope="col">تغییر</th>
+                    <th scope="col">حذف</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @if (Users.Count != 0)
+                {
+                    @foreach (var item in Users)
+                    {
+                        <tr>
+                            <td>@item.FullName</td>
+                            <td>@item.Role</td>
+                            <td>
+                                <a href="user/edit/@item.UserId" class="btn btn-outline-info">تغییرات</a>
+                            </td>
+                            <td>
+                                <button class="btn btn-outline-danger" @onclick="()=>DeleteUser(item.UserId)">حذف</button>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+
+                    <h3 class="text-center text-danger">کاربری موجود نیست</h3>
+                }
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@code {
+    public List<ListOfUserVM> Users { get; set; } = new List<ListOfUserVM>();
+    protected override async Task OnInitializedAsync()
+    {
+        Users = _db.Users.Select(item => new ListOfUserVM()
+            {
+                UserId = item.Id,
+                FullName = $"{item.FirstName} {item.LastName}",
+                Role = _db.UserRoles.Where(i => i.UserId == item.Id).Select(i => _db.Roles.First(role => role.Id == i.RoleId)).Single().Name
+            }).ToList();
+        await Task.Delay(10);
+    }
+    public async void DeleteUser(string Id)
+    {
+
+        var user = _db.Users.FirstOrDefault(item => item.Id == Id);
+        if (user == null)
+        {
+            await _JsRunTime.ToastrError("کاربر مورد نظر موجود نیست");
+        }
+        var result = await _JsRunTime.InvokeAsync<bool>("confirm", $"مطمئن از حذف {user.FirstName} {user.LastName} هستید");
+        try
+        {
+            if (!result)
+            {
+                return;
+            }
+            var roles = await _userManager.GetRolesAsync(user);
+            foreach (var item in roles)
+            {
+                await _userManager.RemoveFromRoleAsync(user, item);
+            }
+            await _userManager.DeleteAsync(user);
+            await _JsRunTime.ToastrSuccess("با موفقیت حذف شد");
+            await OnInitializedAsync();
+            StateHasChanged();
+        }
+        catch
+        {
+            await _JsRunTime.ToastrError("مشکل در حذف کاربر");
+        }
+    }
+}
+

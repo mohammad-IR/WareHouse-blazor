@@ -6,7 +6,6 @@ using WareHouse.Data;
 using WareHouse.Models.InformationUser;
 using WareHouse.Services.IServices;
 using WareHouse.Services;
-
 var builder = WebApplication.CreateBuilder(args);
 
 
@@ -18,7 +17,8 @@ builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")
     ));
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(x => 
+                            x.User.RequireUniqueEmail = false)
     .AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders().AddDefaultUI()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddScoped<IDbInitialzer, DbInitializer>();
@@ -27,6 +27,9 @@ builder.Services.AddScoped<IBaseConfigService, BaseConfigService>();
 builder.Services.AddScoped<ICurrencyServices, CurrencyServices>();
 builder.Services.AddScoped<IRawMaterialService, RawMaterialService>();
 builder.Services.AddScoped<ISupplierService, SupplierService>();
+builder.Services.AddScoped<IUrlServices, UrlServices>();
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

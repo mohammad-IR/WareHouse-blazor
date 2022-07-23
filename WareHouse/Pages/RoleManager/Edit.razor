@@ -1,0 +1,105 @@
+﻿@page "/role/Edit/{Id}"
+
+@using WareHouse.Helper
+@using Microsoft.AspNetCore.Identity
+@inject RoleManager<IdentityRole> _roleManager
+@inject ApplicationDbContext _db
+@inject NavigationManager _navigationManager
+@inject IUrlServices _urlServices
+@inject IJSRuntime _JsRuntime
+
+
+@using Microsoft.AspNetCore.Identity
+@using System.Security.Claims
+@using System.Reflection
+@using WareHouse.Models.InformationUser
+@using WareHouse.Models.ViewModels.RoleVM
+@using WareHouse.Helper
+@using WareHouse.Services.IServices
+@inject RoleManager<IdentityRole> _roleManager
+@inject ApplicationDbContext _db
+@inject NavigationManager _navigationManager
+@inject IUrlServices _urlServices
+@inject IJSRuntime _JsRuntime
+
+<div class="row m-5 border rounded shadow bg-light p-3 justify-content-between align-content-center">
+    <h2 class="col-6 text-primary">ایجاد Role</h2>
+    <div class="col-6 d-flex text-end ">
+        <div class="">
+            <a href="user/list" class="btn btn-outline-primary mx-2 my-2">لیست کابران</a>
+        </div>
+    </div>
+</div>
+<div class="row m-4 p-3 border rounded bg-light ">
+    <EditForm Model="EditRoleVM" OnValidSubmit="Submited">
+        <div class="mb-3">
+            <label class="form-label">نام Role</label>
+            <InputText @bind-Value="EditRoleVM.NameRole" class="form-control"></InputText>
+            <ValidationMessage For="()=>EditRoleVM.NameRole"></ValidationMessage>
+        </div>
+        <div class="mb-3">
+            @foreach (var item in EditRoleVM.NewClaims)
+            {
+
+                <input type="checkbox" @bind="@EditRoleVM.NewClaims[item.Key]" />
+                <label class="form-label">@item.Key</label>
+                <br />
+            }
+        </div>
+        <div class="mb-3">
+            <button type="submit" class="btn btn-primary">ثبت</button>
+        </div>
+    </EditForm>
+</div>
+@code
+{
+    [Parameter]
+    public string Id { get; set; }
+    public EditRoleVM EditRoleVM { get; set; } = new EditRoleVM();
+    protected override async Task OnInitializedAsync()
+    {
+        // set values to EditRoleVM
+        EditRoleVM.Role = _db.Roles.FirstOrDefault(item => item.Id == Id);
+        if (EditRoleVM.Role == null)
+        {
+            _JsRuntime.ToastrError("مشخصات وارد شده یافت نشد");
+            _navigationManager.NavigateTo("role/list");
+        }
+        EditRoleVM.Claims = await _roleManager.GetClaimsAsync(EditRoleVM.Role);
+        EditRoleVM.NewClaims = _urlServices
+                            .GetRouteUrlWithAuthorizeAttribute()
+                            .ToDictionary(item => item, item => EditRoleVM.Claims.Where(claim => claim.Type == item).Any(claim => claim.Value == true.ToString()));
+        EditRoleVM.NameRole = EditRoleVM.Role.Name;
+        await Task.Delay(10);
+    }
+    private async Task Submited()
+    {
+        foreach (var claim in EditRoleVM.Claims)
+        {
+            await _roleManager.RemoveClaimAsync(EditRoleVM.Role, claim);
+        }
+        EditRoleVM.Role.Name = EditRoleVM.NameRole;
+        var result = await _roleManager.UpdateAsync(EditRoleVM.Role);
+        if (!result.Succeeded)
+        {
+            await _JsRuntime.ToastrError("مشکل در ذخیره Role");
+            return;
+        }
+        try
+        {
+            foreach (var item in EditRoleVM.NewClaims)
+            {
+                if (item.Value)
+                {
+                    await _roleManager.AddClaimAsync(EditRoleVM.Role, new Claim(item.Key, true.ToString()));
+                }
+            }
+            await _JsRuntime.ToastrSuccess("با موفقیت ثبت شد");
+            _navigationManager.NavigateTo("role/list");
+        }
+        catch
+        {
+            await _JsRuntime.ToastrError("مشکل در ذخیره Role");
+        }
+    }
+}

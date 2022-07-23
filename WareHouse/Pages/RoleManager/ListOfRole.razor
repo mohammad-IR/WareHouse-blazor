@@ -1,0 +1,72 @@
+﻿@page "/role/list"
+@using Microsoft.AspNetCore.Identity
+@using System.Security.Claims
+@using System.Reflection
+@using WareHouse.Models.InformationUser
+@using WareHouse.Models.ViewModels.RoleVM
+@using WareHouse.Helper
+@using WareHouse.Services.IServices
+@inject RoleManager<IdentityRole> _roleManager
+@inject ApplicationDbContext _db
+@inject NavigationManager _navigationManager
+@inject IJSRuntime _JsRuntime
+
+<div class="row m-5 border rounded shadow bg-light p-3 justify-content-between align-content-center">
+    <h2 class="col-6 text-primary">لیست کابران</h2>
+    <div class="col-6 d-flex text-end ">
+        <div class="">
+            <a href="role/create" class="btn btn-outline-primary mx-2 my-2">ایجاد Role</a>
+        </div>
+    </div>
+</div>
+<div class="row m-5 p-3 border rounded bg-light shadow justify-content-center">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">نام</th>
+                <th scope="col">حذف</th>
+                <th scope="col">تغییر</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Roles)
+            {
+                <tr>
+                    <th>@item.Name</th>
+                    <td>
+                        <button class="btn btn-outline-danger" @onclick="()=>DeleteRole(item.Id)">حذف Role</button>
+                    </td>
+                    <td>
+                        <a class="btn btn-outline-info" href="role/edit/@item.Id">تغییر</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+@code {
+    public List<IdentityRole> Roles { get; set; } = new List<IdentityRole>();
+    protected async override Task OnInitializedAsync()
+    {
+        Roles = _db.Roles.ToList();
+        await Task.Delay(10);
+    }
+    public async void DeleteRole(string id)
+    {
+        var role = _db.Roles.FirstOrDefault(item => item.Id == id);
+        if(role is null)
+        {
+            await _JsRuntime.ToastrError("Role مورد نظر پیدا نشد");
+            return;
+        }
+        var result = await _roleManager.DeleteAsync(role);
+        if (result.Succeeded)
+        {
+            await _JsRuntime.ToastrSuccess("با موفقیت ثبت شد");
+            Roles = _db.Roles.ToList();
+            StateHasChanged();
+            return;
+        }
+        await _JsRuntime.ToastrError("مشکل در حذف Role");
+    }
+}

@@ -1,0 +1,157 @@
+﻿@page "/user/edit/{Id}"
+@using Microsoft.AspNetCore.Identity
+@using WareHouse.Models.InformationUser
+@using WareHouse.Helper
+@using WareHouse.Models.ViewModels.UserVM
+
+@inject ApplicationDbContext _db
+@inject IJSRuntime _JSRuntime
+@inject UserManager<ApplicationUser> _userManager
+@inject NavigationManager _navigationManager
+<div class="row m-5 border rounded shadow bg-light p-3 justify-content-between align-content-center">
+    <h2 class="col-6 text-primary">ایجاد کاربر</h2>
+    <div class="col-6 d-flex text-end ">
+        <div class="offset-md-5">
+            <a href="role/create" class="btn btn-outline-primary mx-2 my-2">ایجاد قانون</a>
+        </div>
+        <div class="">
+            <a href="user/list" class="btn btn-outline-primary mx-2 my-2">لیست کابران</a>
+        </div>
+    </div>
+</div>
+<div class="row m-4 p-3 border rounded bg-light shadow">
+    <EditForm Model="User" OnValidSubmit="Submited">
+        <DataAnnotationsValidator />
+        <div class="mb-3">
+            <label class="form-label">نام</label>
+            <InputText class="form-control" @bind-Value="User.FirstName"></InputText>
+            <ValidationMessage For="()=>User.FirstName"></ValidationMessage>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">نام خانوادگی</label>
+            <InputText class="form-control" @bind-Value="User.LastName"></InputText>
+            <ValidationMessage For="()=>User.LastName"></ValidationMessage>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">نام کاربری  برای ورود</label>
+            <InputText class="form-control" @bind-Value="User.UserName"></InputText>
+            <ValidationMessage For="()=>User.UserName"></ValidationMessage>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">ایمیل</label>
+            <InputText class="form-control" @bind-Value="User.Email"></InputText>
+            <ValidationMessage For="()=>User.Email"></ValidationMessage>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">شماره تلفن</label>
+            <InputText class="form-control" @bind-Value="User.PhoneNumber"></InputText>
+            <ValidationMessage For="()=>User.PhoneNumber"></ValidationMessage>
+        </div>
+        <div class="mb-3">
+            <label class="form-label"> پسورد</label>
+            <InputText type="password" @bind-Value="User.Password" class="form-control"></InputText>
+            <ValidationMessage For="()=>User.Password"></ValidationMessage>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">تکرار پسورد</label>
+            <InputText type="password" @bind-Value="User.PasswordConfrim" class="form-control"></InputText>
+            <ValidationMessage For="()=>User.PasswordConfrim"></ValidationMessage>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">تکرار پسورد</label>
+            <select class="form-select" @bind="User.RoleUser">
+                <option >--انتخاب کنید--</option>
+                @foreach(var item in User.Roles)
+                {
+                    @if (User.RoleUser == item.Key)
+                    {
+                    <option value="@item.Key" selected>@item.Value</option>
+                    }
+                    else
+                    {
+                    <option value="@item.Key">@item.Value</option>
+                        
+                    }
+
+                }
+            </select>
+            <ValidationMessage For="()=>User.RoleUser"></ValidationMessage>
+        </div>
+
+        <div class="mb-3">
+            <button class="btn btn-primary">ثبت درخواست</button>
+        </div>
+    </EditForm>
+</div>
+@code {
+    [Parameter]
+    public string Id { get; set; }
+    public EditUserVM User { get; set; } = new EditUserVM();
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(10);
+        User = _db.Users.Where(item => item.Id == Id).Select(item => new EditUserVM()
+            {
+                FirstName = item.FirstName,
+                LastName = item.LastName,
+                Email = item.Email,
+                UserId = Id,
+                UserName = item.UserName,
+                PhoneNumber = item.PhoneNumber
+            }).Single();
+        User.Roles = _db.Roles.ToDictionary(item => item.Id, item => item.Name);
+        User.RoleUser = _db.UserRoles.First(item => item.UserId == User.UserId).RoleId;
+        if (User.UserId == null)
+        {
+            _navigationManager.NavigateTo("user/list");
+        }
+
+    }
+    protected override bool ShouldRender()
+    {
+        return base.ShouldRender();
+    }
+    private async void Submited()
+    {
+        try
+        {
+            var user = _db.Users.FirstOrDefault(item => item.Id == User.UserId);
+            user.Email = User.Email;
+            user.FirstName = User.FirstName;
+            user.LastName = User.LastName;
+            user.UserName = User.UserName;
+            user.PhoneNumber = user.PhoneNumber;
+            await _userManager.UpdateAsync(user);
+            if (User.Password != null && User.PasswordConfrim != null && User.Password == User.PasswordConfrim)
+            {
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                await _userManager.ResetPasswordAsync(user, token, User.Password);
+            }
+            try
+            {
+                if (User.RoleUser == null)
+                {
+                    await _JSRuntime.ToastrError("باید Role را وارد کنید");
+                    return;
+                }
+                var role = _db.Roles.FirstOrDefault(item => item.Id == User.RoleUser);
+                var rolesUser = _db.UserRoles.First(item => item.UserId == User.UserId);
+                _db.UserRoles.Remove(rolesUser);
+                _db.SaveChanges();
+                await _userManager.AddToRoleAsync(user, role.Name);
+
+                await _JSRuntime.ToastrSuccess("با موفقیت اضافه شد");
+                _navigationManager.NavigateTo("user/list");
+            }
+            catch
+            {
+                await _JSRuntime.ToastrSuccess("مشکل در ذخیره Role");
+                _navigationManager.NavigateTo("user/list");
+            }
+        }
+        catch
+        {
+            await _JSRuntime.ToastrSuccess("مشکل در ذخیره کاربر");
+        }
+    }
+}

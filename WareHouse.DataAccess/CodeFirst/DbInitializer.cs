@@ -39,8 +39,6 @@ namespace WareHouse.DataAccess.CodeFirst
                 _userManager.CreateAsync(new ApplicationUser
                 {
                     UserName = "m.ilaghi5273@gmail.com",
-                    FirstName = "mohammad sadegh",
-                    LastName = "Ilaghi hoseini",
                     Email = "m.ilaghi5273@gmail.com",
                     PhoneNumber = "09162785273",
                     Address = "کرما بلوار جهاد",
