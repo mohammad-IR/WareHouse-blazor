@@ -5,6 +5,8 @@ using WareHouse.Models.CurrenciesPrice;
 using WareHouse.Models.RawMaterials;
 using WareHouse.Models.PersonTypes;
 using WareHouse.Models.ConfigFile;
+using Microsoft.EntityFrameworkCore.Internal;
+using WareHouse.Models.ProductFolder;
 
 namespace WareHouse.DataAccess.Data
 {
@@ -28,6 +30,14 @@ namespace WareHouse.DataAccess.Data
         public DbSet<Supplier> Suppliers { get; set; }
         public DbSet<Personal> Personals { get; set; }
         public DbSet<Corporate> Corporates { get; set; }
+    
+        // Product
+        public DbSet<Product> Products { get; set; }
+        public DbSet<ProductRawMaterials> ProductRawMaterials { get; set; }
+        public DbSet<ListOfProducts> ListOfProducts { get; set; }
+        // WareHouse model
+        public DbSet<Models.WareHouseModel.WareHouse> WareHouses { get; set; }
+
 
         // Config Tables
         public DbSet<BaseSetting> BaseSettings { get; set; }
